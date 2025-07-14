@@ -1,5 +1,6 @@
 import os
 import time
+from admin_functions import ver_pedidos, ver_inventario, ajustar_stock
 
 def salir():
     print("Haz salido del menu admin")
@@ -22,11 +23,11 @@ def menu_admin(CLAVE_ADMIN):
             try:
                 opcion = int(input("Seleccione una opcion:\n"))
                 if opcion == 1:
-                    print ("a")
+                    ver_pedidos()
                 elif opcion == 2:
-                    print ("a")
+                    ver_inventario()
                 elif opcion == 3:
-                    print ("a")
+                    ajustar_stock()
                 elif opcion == 4:
                     on = salir()
                 else:
