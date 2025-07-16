@@ -87,25 +87,25 @@ def ajustar_stock():
                         time.sleep(2)
                         on = False
                         break
-
-                    try:
-                        nueva_cantidad = int(nueva_cantidad_str)
-                        if nueva_cantidad == producto_actual[5]:
-                            print("⚠️ El producto ya tiene esta cantidad de stock. Indique otra cantidad o cancele con '*'\n")
-                            time.sleep(4)
-                        else:
-                            cursor.execute(
-                                "UPDATE inventory SET quantity = %s WHERE product_id = %s",
-                                (nueva_cantidad, id_product)
-                            )
-                            conn.commit()
-                            print("\n✅ Stock actualizado correctamente")
+                    else:
+                        try:
+                            nueva_cantidad = int(nueva_cantidad_str)
+                            if nueva_cantidad == producto_actual[5]:
+                                print("⚠️ El producto ya tiene esta cantidad de stock. Indique otra cantidad o cancele con '*'\n")
+                                time.sleep(4)
+                            else:
+                                cursor.execute(
+                                    "UPDATE inventory SET quantity = %s WHERE product_id = %s",
+                                    (nueva_cantidad, id_product)
+                                )
+                                conn.commit()
+                                print("\n✅ Stock actualizado correctamente")
+                                time.sleep(2)
+                                on = False
+                                break
+                        except ValueError:
+                            print("Ingrese un número entero válido.\n")
                             time.sleep(2)
-                            on = False
-                            break
-                    except ValueError:
-                        print("Ingrese un número entero válido o '*' para cancelar.\n")
-                        time.sleep(2)
 
         except ValueError:
             print("Ingrese un número entero válido para el ID o '*' para cancelar.\n")

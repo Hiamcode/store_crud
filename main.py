@@ -1,6 +1,9 @@
 import os
 import time
+from database.connection import get_connection
 from menu_admin import menu_admin
+from users_functions import realizar_pedido, pagar_pedido, ver_estado_pedidos, cancelar_pedidos
+
 
 def salir():
     print("Gracias por usar el sistema. Hasta luego 👋\n")
@@ -10,26 +13,27 @@ def salir():
 def menu():
     on = True
     CLAVE_ADMIN= "123admin"
+    fondos_usuarios = 99_999_999
     while on:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("\t\t--- WELCOME TO CODE STORE ---\n")
         print("\t\t-- Menú principal --\n")
-        print("1 - Realizar pedido (registro de cliente + armar pedido)")
-        print("2 - Ver estado de mi pedido (buscar pedido por ID o por datos del cliente)")
-        print("3 - Pagar pedido (seleccionar método de pago, validar que tenga pedido pendiente)")
-        print("4 - Cancelar pedido (buscar pedido y eliminarlo si está pendiente)")
-        print("5 - Opciones de administrador (pides clave o password simple)")
+        print("1 - Armar pedido") 
+        print("2 - Pagar pedido")
+        print("3 - Ver estado de mi pedido")
+        print("4 - Cancelar pedido")
+        print("5 - Opciones de administrador")
         print("6 - Salir del sistema\n")
         try:
             opcion = int(input("Seleccione una opcion:\n"))
             if opcion == 1:
-                print ("a")
+                realizar_pedido()
             elif opcion == 2:
-                print ("a")
+                pagar_pedido(fondos_usuarios)
             elif opcion == 3:
-                print ("a")
+                ver_estado_pedidos()
             elif opcion == 4:
-                print ("a")
+                cancelar_pedidos()
             elif opcion == 5:
                 menu_admin(CLAVE_ADMIN)
             elif opcion == 6:
