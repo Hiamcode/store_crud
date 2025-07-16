@@ -123,7 +123,7 @@ def pagar_pedido(fondos_usuarios):
                 SELECT o.orders_id, p.product_id, p.name, p.description, p.price, op.quantity
                 FROM users u 
                 JOIN orders o ON u.user_id = o.user_id
-                JOIN order_product op ON o.orders_id = op.orders_id
+                JOIN order_products op ON o.orders_id = op.orders_id
                 JOIN product p ON op.product_id = p.product_id
                 WHERE u.email = %s
             """, (registro,))
@@ -199,7 +199,7 @@ def ver_estado_pedidos():
                 SELECT o.orders_id, p.name, p.price, os.status_name
                 FROM orders o
                 JOIN users u ON o.user_id = u.user_id
-                JOIN order_product op ON o.orders_id = op.orders_id
+                JOIN order_products op ON o.orders_id = op.orders_id
                 JOIN product p ON op.product_id = p.product_id
                 JOIN order_status os ON o.order_status_id = os.order_status_id
                 WHERE u.email = %s
@@ -241,7 +241,7 @@ def cancelar_pedidos():
                 FROM orders o
                 JOIN users u ON o.user_id = u.user_id
                 JOIN order_status os ON o.order_status_id = os.order_status_id
-                JOIN order_product op ON o.orders_id = op.orders_id
+                JOIN order_products op ON o.orders_id = op.orders_id
                 JOIN product p ON op.product_id = p.product_id
                 WHERE u.email = %s
             """, (registro,))

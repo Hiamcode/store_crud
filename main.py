@@ -18,7 +18,7 @@ def menu():
         os.system('cls' if os.name == 'nt' else 'clear')
         print("\t\t--- WELCOME TO CODE STORE ---\n")
         print("\t\t-- Menú principal --\n")
-        print("1 - Armar pedido") 
+        print("1 - Realizar pedido") 
         print("2 - Pagar pedido")
         print("3 - Ver estado de mi pedido")
         print("4 - Cancelar pedido")
