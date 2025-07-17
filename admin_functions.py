@@ -5,17 +5,31 @@ import time
 def ver_pedidos():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM orders")
+    cursor.execute("""
+        SELECT o.orders_id, u.email, p.product_name, p.product_price, os.status_name
+        FROM orders o
+        JOIN users u ON o.user_id = u.user_id
+        JOIN order_products op ON o.orders_id = op.order_id
+        JOIN products p ON op.product_id = p.product_id
+        JOIN order_status os ON o.order_status_id = os.order_status_id
+        ORDER BY o.orders_id""")
     pedidos = cursor.fetchall()
     if not pedidos:
-        print("\nAun no hay pedidos registrados por clientes")
+        print("\nAún no hay pedidos registrados por clientes")
         time.sleep(2)
     else:
+        print("\n--- 📦 PEDIDOS REGISTRADOS ---\n")
         for pedido in pedidos:
-            print(pedido)
-    cursor.close() 
+            print(f"ID Pedido: {pedido[0]}")
+            print(f"Correo Usuario: {pedido[1]}")
+            print(f"Producto: {pedido[2]}")
+            print(f"Precio: ${pedido[3]}")
+            print(f"Estado del Pedido: {pedido[4]}")
+            print("-" * 40)
+        input("\nPresione enter para continuar")
+    cursor.close()
     conn.close()
-    input("\nPresione enter para continuar")
+
 
 def ver_inventario():
     conn = get_connection()
@@ -55,9 +69,7 @@ def ajustar_stock():
                 "SELECT p.product_id, p.product_name, p.product_description, p.product_price, p.category_id, i.quantity "
                 "FROM products p "
                 "JOIN inventory i ON p.product_id = i.product_id "
-                "WHERE p.product_id = %s",
-                (id_product,)
-            )
+                "WHERE p.product_id = %s",(id_product,))
             producto_actual = cursor.fetchone()
 
             if not producto_actual:
