@@ -291,5 +291,3 @@ def cancelar_pedidos():
 
         cursor.close()
         conn.close()
-
-

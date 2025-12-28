@@ -41,7 +41,7 @@ La base de datos se trabajó directamente desde Python conectando a la base, y s
 
 📎 Diagrama relacional:
 
-![Diagrama de la base de datos](diagrams/diagram_crud.svg)
+![Diagrama de la base de datos](diagrams/DB_diagram.png)
 
 ---
 
@@ -72,7 +72,6 @@ A lo largo del proyecto se practicaron y consolidaron varios conocimientos clave
 - Python 3
 - MySQL
 - MySQL Connector/Python
-- draw.io (diagram_crud E-R)
 - Terminal / Consola
 
 ---
