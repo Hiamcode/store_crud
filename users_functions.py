@@ -51,7 +51,7 @@ def realizar_pedido():
         conn.commit()
         cursor.execute("SELECT LAST_INSERT_ID()")
         order_id = cursor.fetchone()[0]
-        print(f"Pedido creado para user_id {user_id} con order_id {order_id}")
+        print(f"Cliente registrado con exito, Nro. de orden {order_id}")
         time.sleep(2)
 
         total_pedido = 0

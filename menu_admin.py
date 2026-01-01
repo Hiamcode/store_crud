@@ -5,7 +5,7 @@ from admin_functions import ver_pedidos, ver_inventario, ajustar_stock
 def salir():
     print("Haz salido del menu admin")
     time.sleep(2)
-    return False
+    return True
 
 def menu_admin(CLAVE_ADMIN):
     clave_admin = input("Ingrese la contraseña:\n")
