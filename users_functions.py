@@ -12,9 +12,14 @@ def realizar_pedido():
 
         print("\t\t--- REGISTRO DE USUARIO ---\n")
         email = input("Ingrese su correo electrónico:\n").strip().lower()
+
+        if "@" not in email or ".com" not in email:
+            print("❌ Correo inválido. Ingrese un correo con @ y dominio válido (.com).")
+            time.sleep(2)
+            continue
+        
         cursor.execute("SELECT user_id FROM users WHERE email = %s", (email,))
         existe = cursor.fetchone()
-
         if existe:
             user_id = existe[0]
             print(f"✅ Usuario existente encontrado para {email}. Se creará un nuevo pedido.")
