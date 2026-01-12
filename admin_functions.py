@@ -1,6 +1,5 @@
 from database.connection import get_connection
-import os
-import time
+from my_utils import pausa_limpia
 
 def ver_pedidos():
     conn = get_connection()
@@ -16,7 +15,7 @@ def ver_pedidos():
     pedidos = cursor.fetchall()
     if not pedidos:
         print("\nAún no hay pedidos registrados por clientes")
-        time.sleep(2)
+        pausa_limpia()
     else:
         print("\n--- 📦 PEDIDOS REGISTRADOS ---\n")
         for pedido in pedidos:
@@ -56,11 +55,11 @@ def ajustar_stock():
     on = True
     while on:
         try:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            pausa_limpia()
             entrada = input("Ingrese el ID del producto que desea actualizar (o '*' para salir):\n")
             if entrada == '*':
                 print("❌ Operación cancelada. Volviendo a menú anterior.")
-                time.sleep(2)
+                pausa_limpia()
                 on = False
                 break
 
@@ -74,7 +73,7 @@ def ajustar_stock():
 
             if not producto_actual:
                 print("\n❌ Producto no encontrado con ese ID")
-                time.sleep(2)
+                pausa_limpia()
                 continue
             else:
                 print("\n📦 Producto encontrado:")
@@ -88,7 +87,7 @@ def ajustar_stock():
                 confirmar = input("\n¿Desea actualizar el stock de este producto? (s/n): ").lower()
                 if confirmar != 's':
                     print("\n❌ Operación cancelada. Volviendo a menú anterior.")
-                    time.sleep(2)
+                    pausa_limpia()
                     on = False
                     break
 
@@ -96,7 +95,7 @@ def ajustar_stock():
                     nueva_cantidad_str = input("Ingrese la nueva cantidad de stock (o '*' para cancelar):\n")
                     if nueva_cantidad_str == '*':
                         print("❌ Operación cancelada. Volviendo a menú anterior.")
-                        time.sleep(2)
+                        pausa_limpia()
                         on = False
                         break
                     else:
@@ -104,7 +103,7 @@ def ajustar_stock():
                             nueva_cantidad = int(nueva_cantidad_str)
                             if nueva_cantidad == producto_actual[5]:
                                 print("⚠️ El producto ya tiene esta cantidad de stock. Indique otra cantidad o cancele con '*'\n")
-                                time.sleep(4)
+                                pausa_limpia(4)
                             else:
                                 cursor.execute(
                                     "UPDATE inventory SET quantity = %s WHERE product_id = %s",
@@ -112,16 +111,16 @@ def ajustar_stock():
                                 )
                                 conn.commit()
                                 print("\n✅ Stock actualizado correctamente")
-                                time.sleep(2)
+                                pausa_limpia()
                                 on = False
                                 break
                         except ValueError:
                             print("Ingrese un número entero válido.\n")
-                            time.sleep(2)
+                            pausa_limpia()
 
         except ValueError:
             print("Ingrese un número entero válido para el ID o '*' para cancelar.\n")
-            time.sleep(2)
+            pausa_limpia()
 
     cursor.close()
     conn.close()

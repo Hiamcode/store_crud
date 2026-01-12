@@ -1,12 +1,10 @@
 from database.connection import get_connection
-import os
-import time
+from my_utils import pausa_limpia
 
 def realizar_pedido():
-    import os, time
     on = True
     while on:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        pausa_limpia()
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -15,7 +13,7 @@ def realizar_pedido():
 
         if "@" not in email or ".com" not in email:
             print("❌ Correo inválido. Ingrese un correo con @ y dominio válido (.com).")
-            time.sleep(2)
+            pausa_limpia()
             continue
         
         cursor.execute("SELECT user_id FROM users WHERE email = %s", (email,))
@@ -23,16 +21,113 @@ def realizar_pedido():
         if existe:
             user_id = existe[0]
             print(f"✅ Usuario existente encontrado para {email}. Se creará un nuevo pedido.")
-            time.sleep(2)
+            pausa_limpia()
+
         else:
-            nombre = input("Ingrese su nombre:\n")
-            apellido = input("Ingrese su apellido:\n")
-            try:
-                edad = int(input("Ingrese su edad:\n"))
-            except ValueError:
-                edad = None
-            telefono = input("Ingrese su número de teléfono:\n")
-            direccion = input("Ingrese su dirección:\n")
+            
+            validacion_nombre = True
+            while validacion_nombre:
+                nombre = input("Ingrese su primer nombre:\n").strip().lower()
+
+                if not nombre.isalpha():
+                    print("\nError: El nombre solo debe contener letras.")
+                    pausa_limpia()
+                    continue
+
+                elif len(nombre) < 2 or len(nombre) > 40:
+                    print("\nError: El nombre debe tener entre 2 y 40 caracteres.")
+                    pausa_limpia()
+                    continue
+
+                else:
+                    print("\nNombre valido.")
+                    pausa_limpia()
+                    validacion_nombre = False
+
+            validacion_apellido = True
+            while validacion_apellido:
+                apellido = input("Ingrese su primer apellido:\n").strip().lower()
+
+                if not apellido.isalpha():
+                    print("\nError: El apellido solo debe contener letras.")
+                    pausa_limpia()
+                    continue
+
+                elif len(apellido) < 2 or len(apellido) > 40:
+                    print("\nError: El apellido debe tener entre 2 y 40 caracteres.")
+                    pausa_limpia()
+                    continue
+
+                else:
+                    print("\nApellido valido.")
+                    pausa_limpia()
+                    validacion_apellido = False
+
+                validacion_edad = True
+            while validacion_edad:
+                edad = input("Ingrese su edad (Opcional, presione Enter para omitir):\n").strip()
+
+                if edad == "":
+                    edad = None
+                    print("\nEdad omitida.")
+                    pausa_limpia()
+                    validacion_edad = False
+                    continue
+                
+                elif not edad.isdigit():
+                    print("\nError: La edad solo debe contener números.")
+                    pausa_limpia()
+                    continue
+                
+                edad = int(edad)
+                if edad < 18 or edad > 110:
+                    print("\nError: Debe ser mayor de edad para realizar un pedido (18-110).")
+                    pausa_limpia(3)
+                    continue
+                else:
+                    print(f"\nEdad válida: {edad}")
+                    pausa_limpia()
+                    validacion_edad = False
+
+            validacion_telefono = True
+            while validacion_telefono:
+                telefono = input("Ingrese su número de teléfono(Opcional, ingrese Entrer para omitir):\n").strip()
+
+                if telefono == "":
+                    telefono = None
+                    print("\nTeléfono omitido.")
+                    pausa_limpia()
+                    validacion_telefono = False
+                    continue
+                
+                elif not telefono.isdigit():
+                    print("\nError: El teléfono solo debe contener números.")
+                    pausa_limpia()
+                    continue
+                
+                elif len(telefono) < 9 or len(telefono) > 15:
+                    print("\nError: El teléfono debe tener entre 9 y 15 dígitos.")
+                    pausa_limpia()
+                    continue
+                
+                else:
+                    print(f"\nTeléfono válido: {telefono}")
+                    pausa_limpia()
+                    validacion_telefono = False
+
+            validacion_direccion = True
+            while validacion_direccion:
+                direccion = input("Ingrese su dirección:\n").strip().lower()
+                
+                if len(direccion) < 5 or len(direccion) > 100:
+                    print("\nError: La dirección debe tener entre 5 y 100 caracteres.")
+                    pausa_limpia()
+                    continue
+                
+                else:
+                    print(f"\nDirección válida: {direccion}")
+                    pausa_limpia()
+                    validacion_direccion = False
 
             cursor.execute("""
                 INSERT INTO users (name, last_name, age, email, phone, address, registration_date)
@@ -45,7 +140,7 @@ def realizar_pedido():
 
             if not user:
                 print("❌ Error registrando usuario.")
-                time.sleep(2)
+                pausa_limpia()
                 cursor.close()
                 conn.close()
                 on = False
@@ -57,12 +152,12 @@ def realizar_pedido():
         cursor.execute("SELECT LAST_INSERT_ID()")
         order_id = cursor.fetchone()[0]
         print(f"Cliente registrado con exito, Nro. de orden {order_id}")
-        time.sleep(2)
+        pausa_limpia()
 
         total_pedido = 0
         seguir = True
         while seguir:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            pausa_limpia()
             cursor.execute("""
                 SELECT p.product_id, p.product_name, p.product_description, p.product_price, i.quantity
                 FROM products p
@@ -90,13 +185,13 @@ def realizar_pedido():
                     cursor.execute("UPDATE inventory SET quantity = quantity - %s WHERE product_id = %s", (cantidad, producto_id))
                     conn.commit()
                     print(f"✅ Producto agregado. Subtotal: {subtotal}")
-                    time.sleep(2)
+                    pausa_limpia()
                 else:
                     print("❌ Stock insuficiente o producto no existe.")
-                    time.sleep(2)
+                    pausa_limpia()
             except ValueError:
                 print("❌ Entrada inválida.")
-                time.sleep(2)
+                pausa_limpia()
 
             otro = input("¿Desea agregar otro producto? (s/n)\n").lower()
             if otro != "s":
@@ -105,7 +200,7 @@ def realizar_pedido():
         cursor.execute("UPDATE orders SET total = %s WHERE orders_id = %s", (total_pedido, order_id))
         conn.commit()
         print(f"\n✅ Pedido creado exitosamente con total: {total_pedido}")
-        time.sleep(3)
+        pausa_limpia(3)
         cursor.close()
         conn.close()
         on = False
@@ -113,7 +208,7 @@ def realizar_pedido():
 def pagar_pedido(fondos_usuarios):
     on = True
     while on:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        pausa_limpia()
         print("\t\t--- BUSQUEMOS EL PEDIDO ---\n")
         conn = get_connection()
         cursor = conn.cursor()
@@ -124,7 +219,7 @@ def pagar_pedido(fondos_usuarios):
 
         if not user:
             print("❌ No existen pedidos asociados a ese correo.\n")
-            time.sleep(2)
+            pausa_limpia()
             on = False
         else:
             cursor.execute("""
@@ -140,7 +235,7 @@ def pagar_pedido(fondos_usuarios):
 
             if not pedidos:
                 print("❌ No hay pedidos pendientes de pago.")
-                time.sleep(2)
+                pausa_limpia()
                 on = False
             else:
                 print("\t\t--- 📦 PEDIDOS PENDIENTES ---\n")
@@ -153,13 +248,13 @@ def pagar_pedido(fondos_usuarios):
 
                     if not pedido_valido:
                         print("❌ ID de pedido inválido.")
-                        time.sleep(2)
+                        pausa_limpia()
                         continue
 
                     total = pedido_valido[1]
                     if fondos_usuarios < total:
                         print("❌ Fondos insuficientes.")
-                        time.sleep(2)
+                        pausa_limpia()
                         on = False
                         continue
 
@@ -178,14 +273,14 @@ def pagar_pedido(fondos_usuarios):
                             WHERE orders_id = %s""", (metodo, pedido_id))
                         conn.commit()
                         print("✅ Pago realizado correctamente.")
-                        time.sleep(2)
+                        pausa_limpia()
                         on = False
                     else:
                         print("❌ Opción inválida.")
-                        time.sleep(2)
+                        pausa_limpia()
                 except ValueError:
                     print("❌ Entrada inválida.")
-                    time.sleep(2)
+                    pausa_limpia()
 
         cursor.close()
         conn.close()
@@ -193,7 +288,7 @@ def pagar_pedido(fondos_usuarios):
 def ver_estado_pedidos():
     on = True
     while on:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        pausa_limpia()
         print("\t\t--- BUSQUEMOS EL PEDIDO ---\n")
         conn = get_connection()
         cursor = conn.cursor()
@@ -204,10 +299,10 @@ def ver_estado_pedidos():
 
         if not buscado:
             print("No existen pedidos asociados a ese correo.\n")
-            time.sleep(2)
+            pausa_limpia()
             on = False
         else:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            pausa_limpia()
             print("\t\t--- 📦 PEDIDOS ENCONTRADOS ---\n")
             cursor.execute("""
                 SELECT o.orders_id, p.product_name, p.product_price, os.status_name
@@ -235,7 +330,7 @@ def ver_estado_pedidos():
 def cancelar_pedidos():
     on = True
     while on:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        pausa_limpia()
         print("\t\t--- BUSQUEMOS EL PEDIDO ---\n")
         conn = get_connection()
         cursor = conn.cursor()
@@ -246,7 +341,7 @@ def cancelar_pedidos():
 
         if not user:
             print("❌ No existen pedidos asociados a ese correo.\n")
-            time.sleep(2)
+            pausa_limpia()
             on = False
         else:
             cursor.execute("""
@@ -275,7 +370,7 @@ def cancelar_pedidos():
                     pedido_id = int(input("\nIngrese el ID del pedido que desea cancelar:\n"))
                     if pedido_id not in pedido_ids:
                         print("❌ Ese ID no está en la lista de pedidos mostrados.")
-                        time.sleep(2)
+                        pausa_limpia()
                         continue
                     confirmacion = input("Seguro que deseas cancelar el pedido? (Escribe 'CANCELAR PEDIDO' para confirmar)\n")
                     if confirmacion.strip().upper() == "CANCELAR PEDIDO":
@@ -284,14 +379,14 @@ def cancelar_pedidos():
                         print("✅ Pedido cancelado correctamente.")
                     else:
                         print("❌ Cancelación no confirmada.")
-                    time.sleep(2)
+                    pausa_limpia()
                     on = False
                 except ValueError:
                     print("❌ Entrada inválida.")
-                    time.sleep(2)
+                    pausa_limpia()
             else:
                 print("❌ No hay pedidos pendientes para cancelar.")
-                time.sleep(2)
+                pausa_limpia()
                 on = False
 
         cursor.close()

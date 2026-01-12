@@ -1,13 +1,11 @@
-import os
-import time
 from database.connection import get_connection
-from menu_admin import menu_admin
+from menu_admin import menu_administrador
 from users_functions import realizar_pedido, pagar_pedido, ver_estado_pedidos, cancelar_pedidos
-
+from my_utils import pausa_limpia
 
 def salir():
     print("Gracias por usar el sistema. Hasta luego 👋\n")
-    time.sleep(2)
+    pausa_limpia()
     return False
 
 def menu():
@@ -15,7 +13,7 @@ def menu():
     CLAVE_ADMIN= "123admin"
     fondos_usuarios = 99_999_999
     while on:
-        os.system('cls' if os.name == 'nt' else 'clear')
+        pausa_limpia()
         print("\t\t--- WELCOME TO CODE STORE ---\n")
         print("\t\t-- Menú principal --\n")
         print("1 - Realizar pedido") 
@@ -35,12 +33,12 @@ def menu():
             elif opcion == 4:
                 cancelar_pedidos()
             elif opcion == 5:
-                menu_admin(CLAVE_ADMIN)
+                menu_administrador(CLAVE_ADMIN)
             elif opcion == 6:
                 on = salir()
             else:
                 print(f"Opción {opcion} aún no implementada. Elige una opcion entre 1 y 6.\n")
-                time.sleep(2)
+                pausa_limpia()
         except ValueError:
             print("Ingrese solo caracteres numéricos\n")
             input("Presione Enter para continuar...")

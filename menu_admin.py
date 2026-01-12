@@ -1,20 +1,19 @@
-import os
-import time
 from admin_functions import ver_pedidos, ver_inventario, ajustar_stock
+from my_utils import pausa_limpia
 
 def salir():
     print("Haz salido del menu admin")
-    time.sleep(2)
+    pausa_limpia()
     return False
 
-def menu_admin(CLAVE_ADMIN):
+def menu_administrador(CLAVE_ADMIN):
     clave_admin = input("Ingrese la contraseña:\n")
     if clave_admin == CLAVE_ADMIN:
         print("\t\t--- ACCESO CONCEDIDO ---\n")
-        time.sleep(2)
+        pausa_limpia()
         on = True
         while on:
-            os.system('cls' if os.name == 'nt' else 'clear')
+            pausa_limpia()
             print ("\t\t--- ADMIN MENU ---\n")
             print ("1 - Ver todos los pedidos")
             print ("2 - Ver inventario")
@@ -32,7 +31,7 @@ def menu_admin(CLAVE_ADMIN):
                     on = salir()
                 else:
                     print(f"Opción {opcion} aún no implementada. Elige una opcion entre 1 y 4.")
-                    time.sleep(2)
+                    pausa_limpia()
             except ValueError:
                 print("Ingrese solo caracteres numéricos\n")
                 input("Presione Enter para continuar...")
