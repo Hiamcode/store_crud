@@ -54,73 +54,99 @@ def ajustar_stock():
     cursor = conn.cursor()
     on = True
     while on:
-        try:
-            pausa_limpia()
-            entrada = input("Ingrese el ID del producto que desea actualizar (o '*' para salir):\n")
+            pausa_limpia(0)
+            entrada = input("Ingrese el ID del producto que desea actualizar (o '*' para salir):\n").strip()
+
             if entrada == '*':
                 print("❌ Operación cancelada. Volviendo a menú anterior.")
                 pausa_limpia()
-                on = False
-                break
+                return
 
-            id_product = int(entrada)
-            cursor.execute(
-                "SELECT p.product_id, p.product_name, p.product_description, p.product_price, p.category_id, i.quantity "
-                "FROM products p "
-                "JOIN inventory i ON p.product_id = i.product_id "
-                "WHERE p.product_id = %s",(id_product,))
-            producto_actual = cursor.fetchone()
-
-            if not producto_actual:
-                print("\n❌ Producto no encontrado con ese ID")
+            elif not entrada.isdigit():
+                print("\n❌ ID inválido. Ingrese caracteres numéricos o '*' para salir.")
                 pausa_limpia()
                 continue
+            
+            id_product = int(entrada)
+
+            if id_product < 1 or id_product > 10:
+                print("\n❌ ID inválido. Ingrese ID de productos existentes (1 a 10).")
+                pausa_limpia()
+                continue
+            
             else:
-                print("\n📦 Producto encontrado:")
-                print(f"ID: {producto_actual[0]}")
-                print(f"Nombre: {producto_actual[1]}")
-                print(f"Descripción: {producto_actual[2]}")
-                print(f"Precio: {producto_actual[3]}")
-                print(f"Categoría ID: {producto_actual[4]}")
-                print(f"Cantidad actual: {producto_actual[5]}")
-
-                confirmar = input("\n¿Desea actualizar el stock de este producto? (s/n): ").lower()
-                if confirmar != 's':
-                    print("\n❌ Operación cancelada. Volviendo a menú anterior.")
+                cursor.execute(
+                    "SELECT p.product_id, p.product_name, p.product_description, p.product_price, p.category_id, i.quantity "
+                    "FROM products p "
+                    "JOIN inventory i ON p.product_id = i.product_id "
+                    "WHERE p.product_id = %s",(id_product,))
+                producto_actual = cursor.fetchone()
+                if not producto_actual:
+                    print("\n❌ Producto no encontrado.")
                     pausa_limpia()
-                    on = False
-                    break
+                    continue
 
-                while True:
-                    nueva_cantidad_str = input("Ingrese la nueva cantidad de stock (o '*' para cancelar):\n")
-                    if nueva_cantidad_str == '*':
+                validacion_cambio_stock = True
+                while validacion_cambio_stock:
+
+                    print("\n📦 Producto encontrado:")
+                    print(f"ID: {producto_actual[0]}")
+                    print(f"Nombre: {producto_actual[1]}")
+                    print(f"Descripción: {producto_actual[2]}")
+                    print(f"Precio: {producto_actual[3]}")
+                    print(f"Categoría ID: {producto_actual[4]}")
+                    print(f"Cantidad actual: {producto_actual[5]}")
+                    
+                    confirmar = input("\n¿Desea actualizar el stock de este producto? (s/n): ").lower().strip()
+                    if confirmar == 'n':
+                        print("\n❌ Operación cancelada. Volviendo a menú anterior.")
+                        pausa_limpia()
+                        validacion_cambio_stock = False
+                        on = False
+                        
+                    elif confirmar == 's':
+                        print("\n✅ Confirma modificar stock.")
+                        validacion_cambio_stock = False
+
+                    else:
+                        print("\n❌ Ingreso invalido, ingrese solo caracteres validos 's/n'")
+                        pausa_limpia(3)
+                        continue
+
+                validacion_cantidad_stock = True
+                while validacion_cantidad_stock:
+                        
+                    entrada = input("Ingrese la nueva cantidad de stock (o '*' para cancelar):\n").strip()
+                    if entrada == '*':
                         print("❌ Operación cancelada. Volviendo a menú anterior.")
                         pausa_limpia()
-                        on = False
-                        break
-                    else:
-                        try:
-                            nueva_cantidad = int(nueva_cantidad_str)
-                            if nueva_cantidad == producto_actual[5]:
-                                print("⚠️ El producto ya tiene esta cantidad de stock. Indique otra cantidad o cancele con '*'\n")
-                                pausa_limpia(4)
-                            else:
-                                cursor.execute(
-                                    "UPDATE inventory SET quantity = %s WHERE product_id = %s",
-                                    (nueva_cantidad, id_product)
-                                )
-                                conn.commit()
-                                print("\n✅ Stock actualizado correctamente")
-                                pausa_limpia()
-                                on = False
-                                break
-                        except ValueError:
-                            print("Ingrese un número entero válido.\n")
-                            pausa_limpia()
+                        return
 
-        except ValueError:
-            print("Ingrese un número entero válido para el ID o '*' para cancelar.\n")
-            pausa_limpia()
+                    elif not entrada.isdigit():
+                        print("\n❌ Ingreso invalido, ingrese solo caracteres numericos enteros (o '*' para cancelar).")
+                        pausa_limpia()
+                        continue
+                    
+                    cantidad_actual = int(entrada)
+
+                    if cantidad_actual < 0 or cantidad_actual > 200:
+                        print("\n❌ Operacion imposible, ingrese stock entre 0 a 200.")
+                        pausa_limpia()
+                        continue
+
+                    if cantidad_actual == producto_actual[5]:
+                            print("⚠️ El producto ya tiene esta cantidad de stock. Indique otra cantidad o cancele con '*'\n")
+                            pausa_limpia(4)
+                    else:
+                        cursor.execute(
+                            "UPDATE inventory SET quantity = %s WHERE product_id = %s",
+                            (cantidad_actual, id_product)
+                        )
+                        conn.commit()
+                        print("\n✅ Stock actualizado correctamente.")
+                        pausa_limpia()
+                        on = False
+                        return
 
     cursor.close()
     conn.close()
