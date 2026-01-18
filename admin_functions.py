@@ -1,6 +1,30 @@
 from database.connection import get_connection
 from my_utils import pausa_limpia
 
+def mostrar_filtro(entrada,conn):
+    cursor = conn.cursor()
+    cursor.execute(f"""
+        SELECT o.orders_id, u.email, p.product_name, p.product_price, os.status_name
+        FROM orders o
+        JOIN users u ON o.user_id = u.user_id
+        JOIN order_products op ON o.orders_id = op.order_id
+        JOIN products p ON op.product_id = p.product_id
+        JOIN order_status os ON o.order_status_id = os.order_status_id
+        WHERE os.status_name = '{entrada}'
+        ORDER BY o.orders_id""")
+    pedidos = cursor.fetchall()
+    for pedido in pedidos:
+        print(f"ID Pedido: {pedido[0]}")
+        print(f"Correo Usuario: {pedido[1]}")
+        print(f"Producto: {pedido[2]}")
+        print(f"Precio: ${pedido[3]}")
+        print(f"Estado del Pedido: {pedido[4]}")
+        print("-" * 40)
+    input("\nSi desea salir presione 'Enter' para volver al menu de filtros\n")
+    cursor.close()
+
+        
+        
 def ver_pedidos():
     conn = get_connection()
     cursor = conn.cursor()
@@ -17,18 +41,69 @@ def ver_pedidos():
         print("\nAún no hay pedidos registrados por clientes")
         pausa_limpia()
     else:
-        print("\n--- 📦 PEDIDOS REGISTRADOS ---\n")
-        for pedido in pedidos:
-            print(f"ID Pedido: {pedido[0]}")
-            print(f"Correo Usuario: {pedido[1]}")
-            print(f"Producto: {pedido[2]}")
-            print(f"Precio: ${pedido[3]}")
-            print(f"Estado del Pedido: {pedido[4]}")
-            print("-" * 40)
-        input("\nPresione enter para continuar")
+        ver_pedido = True
+        while ver_pedido:
+            print("\n--- 📦 PEDIDOS REGISTRADOS ---\n")
+            for pedido in pedidos:
+                print(f"ID Pedido: {pedido[0]}")
+                print(f"Correo Usuario: {pedido[1]}")
+                print(f"Producto: {pedido[2]}")
+                print(f"Precio: ${pedido[3]}")
+                print(f"Estado del Pedido: {pedido[4]}")
+                print("-" * 40)
+            filtrar = input("\nDesea filtrar pedidos?(s/n)\n").strip().lower()
+
+            if not filtrar.isalpha():
+                print(f"\n❌Opcion {filtrar} invalida, ingrese una opcion valida ('s' o 'n')\n")
+                pausa_limpia()
+                continue
+
+            if filtrar == "n":
+                print("\nVolviendo al menu de adminstrador")
+                pausa_limpia(1)
+                return
+
+            elif filtrar == "s":
+                menu_mostrar = True
+                while menu_mostrar:
+                    pausa_limpia(1)
+                    print("\n\n\t--- Mostrar Pedidos por filtros ---\n")
+                    print("1 - Pendientes")
+                    print("2 - Pagados")
+                    print("3 - Cancelados")
+                    print("4 - Salir\n")
+                    entrada_str = input("Ingrese una opcion\n").strip()
+
+                    if not entrada_str.isdigit():
+                        print(f"\n❌Opcion {entrada_str} invalida, ingrese caracteres numericos.")
+                        continue
+
+                    entrada = int(entrada_str)
+
+                    if entrada == 1:
+                        entrada = "Pending"
+                        mostrar_filtro(entrada,conn)
+
+                    elif entrada == 2:
+                        entrada = "Paid"
+                        mostrar_filtro(entrada,conn)
+
+                    elif entrada == 3:
+                        entrada = "Cancelled"
+                        mostrar_filtro(entrada,conn)
+
+                    elif entrada == 4:
+                        print("\nVolviendo al menu de admin...")
+                        pausa_limpia()
+                        return
+                    else:
+                        print(f"❌Opcion {entrada} invalida, ingrese una opcion valida entre 1 y 4.\n")
+            else:
+                print(f"❌Opcion {filtrar} invalida, ingrese una opcion valida ('s' o 'n')\n")
+                pausa_limpia()
+                continue
     cursor.close()
     conn.close()
-
 
 def ver_inventario():
     conn = get_connection()
